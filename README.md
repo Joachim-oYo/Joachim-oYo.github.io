@@ -1,3 +1,4 @@
 # Joachim-oYo.github.io
 
-My webpage
+Site for various experiments and things.
+jeremyjoachim.com
