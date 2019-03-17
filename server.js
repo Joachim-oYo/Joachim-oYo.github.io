@@ -47,6 +47,7 @@ app.post('/addRestaurant', urlencodedParser, function (req, res) {
         console.log('Updating ' + req.body.restaurant_name + ' and writing to ' + jsonFileName);
         console.log(JSON.stringify(jsonFile, null, 2));
 //        res.end(JSON.stringify(jsonFile, null, 2));
+        res.sendFile(__dirname + "/" + "index.html");
     });
 })
 
