@@ -1,3 +1,4 @@
+// For REST and JSON
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -9,18 +10,6 @@ var fs = require("fs");
 var jsonFileName = __dirname + '/restaurants.json';
 var jsonFile = require(jsonFileName);
 
-var voteCount = 0;
-
-var restaurantVotes = {};
-
-
-//var restaurant = {
-//    "restaurant4": {
-//        "name": "Den Den",
-//        "votes": 1,
-//        "id": 4
-//    }
-//}
 
 function createRestaurant(resto_name) {
     var votes = 1;
@@ -40,13 +29,17 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "index.html");
 })
 
+app.get('/addRestaurant', function (req, res) {
+    res.sendFile(__dirname + "/" + "index.html");
+})
+
 app.post('/addRestaurant', urlencodedParser, function (req, res) {
     jsonFile[req.body.restaurant_name] = createRestaurant(req.body.restaurant_name);
     fs.writeFile(jsonFileName, JSON.stringify(jsonFile, null, 2), function (err) {
         if (err) return console.log(err);
         console.log('Updating ' + req.body.restaurant_name + ' and writing to ' + jsonFileName);
         console.log(JSON.stringify(jsonFile, null, 2));
-//        res.end(JSON.stringify(jsonFile, null, 2));
+        //        res.end(JSON.stringify(jsonFile, null, 2));
         res.sendFile(__dirname + "/" + "index.html");
     });
 })
