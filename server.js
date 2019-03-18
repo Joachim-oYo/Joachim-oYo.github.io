@@ -53,8 +53,6 @@ app.post('/addRestaurant', urlencodedParser, function (req, res) {
         //        res.end(JSON.stringify(jsonFile, null, 2));
         res.sendFile(__dirname + "/" + "index.html");
     });
-
-    updateRestaurantList(jsonFile);
 })
 
 // On a GET to /listRestaurants, show the current
