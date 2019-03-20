@@ -1,5 +1,5 @@
 // For JSON File
-
+var actual_JSON;
 
 
 // DOM strings
@@ -30,7 +30,7 @@ function loadJSON(callback) {
 function init() {
     loadJSON(function (response) {
         // Parse JSON string into object
-        var actual_JSON = JSON.parse(response);
+        actual_JSON = JSON.parse(response);
         updateRestaurantList(actual_JSON);
     });
 }
@@ -73,16 +73,16 @@ function postSetDelivery(name, deliveryFlag) {
 // ----------------------------------------------
 // UI Managing
 // ----------------------------------------------
+function update() {
+    
+}
+
+
 function updateRestaurantList(obj) {
     var element, html, newHtml;
     // Create HTML string with placeholder text
     element = DOMStrings.resultsList;
-    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><button class="vote__btn" id="vote__btn-%id%"></button> <input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id% for="delivery__btn-%id%">Is delivery available?</label></div></div>';
-
-
-
-    //  <input type="checkbox" name="cb" id="cb3" />
-    //  <label id="lb3" for="cb3">Has Delivery?</label>
+    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><button class="vote__btn" id="vote__btn-%id%"></button> <input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
 
 
 
@@ -91,15 +91,12 @@ function updateRestaurantList(obj) {
         let restaurantId = obj[name].id;
         let restaurantHasDelivery = obj[name].hasDelivery;
         let checkFlag = '';
-        let deliveryMsg = '';
 
         if (restaurantHasDelivery == 'true') {
             checkFlag = 'checked';
-            deliveryMsg = '';
         }
 
         newHtml = html.replace('%name%', name);
-        //        console.log(name + ': ' + obj[name].votes);
         newHtml = newHtml.replace('%votes%', restaurantVotes);
         newHtml = newHtml.replace('%delivery%', checkFlag);
         newHtml = newHtml.replace('%id%', restaurantId);
@@ -111,6 +108,10 @@ function updateRestaurantList(obj) {
         // Insert the HTML into the DOM
         document.querySelector(element).insertAdjacentHTML('beforeEnd', newHtml);
 
+        // Set the state of the delivery button based on the JSON file
+        updateDeliveryCheckbox(restaurantId, restaurantHasDelivery);
+
+
         // Add an event listener for the buttons
         document.getElementById("vote__btn-" + restaurantId).addEventListener("click", function () {
             postAddRestaurant(name);
@@ -118,11 +119,22 @@ function updateRestaurantList(obj) {
         });
         document.getElementById("delivery__btn-" + restaurantId).addEventListener("click", function () {
             postSetDelivery(name, document.getElementById("delivery__btn-" + restaurantId).checked);
-            console.log(document.getElementById("delivery__btn-" + restaurantId).checked);
+            updateDeliveryCheckbox(restaurantId, document.getElementById("delivery__btn-" + restaurantId).checked);
         });
 
     }
     console.log(obj);
 }
 
+function updateDeliveryCheckbox(idNum, deliveryFlag) {
+    if (deliveryFlag == true || deliveryFlag == 'true') {
+        document.getElementById("delivery__lb-" + idNum).textContent = 'Delivery is available!';
+    }
+    else
+        document.getElementById("delivery__lb-" + idNum).textContent = 'Is delivery available?';
+    
+    console.log(deliveryFlag);
+}
+
 init();
+update();
