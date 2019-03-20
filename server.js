@@ -20,14 +20,13 @@ var hasDelivery = false;
 // If that restaurant already exists, adds 1 to
 // its votes value.
 function createRestaurant(resto_name) {
-    var votes = 1;
+    var votes = 0;
     if (resto_name in jsonFile) {
         //        jsonFile[resto_name].votes++;
         votes = jsonFile[resto_name].votes + 1;
         id = jsonFile[resto_name].id;
         hasDelivery = jsonFile[resto_name].hasDelivery;
-    }
-    else {
+    } else {
         id = 1;
         for (resto_name in jsonFile) {
             id++;
@@ -67,11 +66,26 @@ app.post('/addRestaurant', urlencodedParser, function (req, res) {
     });
 })
 
-// On a POST to /addRestaurant, modify the 
-// restaurants.json file depending on what was submitted
+
+app.post('/placeVote', urlencodedParser, function (req, res) {
+    if (!(req.body.subtract_from == req.body.add_to)) {
+        console.log('Removing one vote from ' + req.body.subtract_from);
+        jsonFile[req.body.subtract_from].votes--;
+    }
+
+    console.log('Adding one vote to ' + req.body.add_to);
+    jsonFile[req.body.add_to].votes++;
+
+    fs.writeFile(jsonFileName, JSON.stringify(jsonFile, null, 2), function (err) {
+        if (err) return console.log(err);
+        res.sendFile(__dirname + "/" + "index.html");
+    })
+})
+
+
 app.post('/setRestaurantDelivery', urlencodedParser, function (req, res) {
     jsonFile[req.body.restaurant_name].hasDelivery = req.body.has_delivery;
-    
+
     fs.writeFile(jsonFileName, JSON.stringify(jsonFile, null, 2), function (err) {
         if (err) return console.log(err);
         res.sendFile(__dirname + "/" + "index.html");

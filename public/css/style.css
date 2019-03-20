@@ -1,13 +1,17 @@
 /* ----------------------------------------------
                     Global
 ---------------------------------------------- */
+
+/*
 h1 {
     font-size: 36px;
 }
+*/
+
 
 body {
     margin: 0;
-    /*  padding-top:120px;*/
+    /*    padding-top: 120px;*/
     padding-top: 1%;
     /*  font-family:'open sans',sans-serif;*/
     color: #fff;
@@ -15,78 +19,180 @@ body {
     height: 100%;
 }
 
+
 .top {
-    text-align: center;
+    /*    text-align: center;*/
     padding-bottom: 5%;
     font-size: 22px;
 }
 
 .bottom {
     font-size: 22px;
+    /*    text-align: left;*/
+    position: absolute;
+    text-align: left;
 }
 
-/*
+
+
 .center-on-page {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
-*/
+
+
+/* ----------------------------------------------
+                    Input Text
+---------------------------------------------- */
+body {
+    margin: 20px;
+}
+
+h1 {
+    line-height: 1.2;
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+.container {}
+
+/* Actual code example */
+.form-field {
+    margin: 0 auto 35px;
+    max-width: 450px;
+    display: block;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.form-field--is-active .form-field__control::after {
+    border-bottom: 2px solid #e23b3b;
+    transform: scaleX(150);
+}
+
+.form-field--is-active .form-field__label {
+    color: #e23b3b;
+    font-size: 0.75rem;
+    transform: translateY(-14px);
+}
+
+.form-field--is-filled .form-field__label {
+    font-size: 0.75rem;
+    transform: translateY(-14px);
+}
 
 .form-field__label {
-    
+    display: block;
+    font-size: 1.2rem;
+    font-weight: normal;
+    left: 0;
+    margin: 0;
+    padding: 18px 12px 0;
+    position: absolute;
+    top: 0;
+    transition: all 0.4s;
+    width: 100%;
 }
+
+.form-field__control {
+    background: #eee;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.form-field__control::after {
+    border-bottom: 2px solid #e23b3b;
+    bottom: 0;
+    content: "";
+    display: block;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    transform: scaleX(0);
+    transition: all 0.4s;
+    width: 1%;
+}
+
+.form-field__input,
+.form-field__textarea {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #999;
+    color: #333;
+    display: block;
+    font-size: 1.2rem;
+    margin-top: 24px;
+    outline: 0;
+    padding: 0 12px 10px 12px;
+    width: 100%;
+}
+
+.form-field__textarea {
+    height: 150px;
+}
+
 
 /* ----------------------------------------------
                 Delivery Checkbox
 ---------------------------------------------- */
 
 input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  z-index: -1;
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
 }
+
 .delivery__lb {
-  position: relative;
-  display: inline-block;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  padding-left: 30px;
-  padding-right: 10px;
-  line-height: 36px;
-  cursor: pointer;
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding-left: 30px;
+    padding-right: 10px;
+    line-height: 36px;
+    cursor: pointer;
 }
+
 .delivery__lb::before {
-  content: " ";
-  position: absolute;
-  top: 6px;
-  left: 0;
-  display: block;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #10ccaf;
-  border-radius: 6px;
-  z-index: -1;
+    content: " ";
+    position: absolute;
+    top: 6px;
+    left: 0;
+    display: block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #10ccaf;
+    border-radius: 6px;
+    z-index: -1;
 }
 
 /* Checked */
 input[type="checkbox"]:checked + .delivery__lb {
-  padding-left: 10px;
-  color: #fff;
+    padding-left: 10px;
+    color: #fff;
 }
+
 input[type="checkbox"]:checked + .delivery__lb::before {
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #10ccaf;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #10ccaf;
 }
+
 /* Transition */
 .delivery__lb,
 .delivery__lb::before {
-  -webkit-transition: .25s all ease;
-  -o-transition: .25s all ease;
-  transition: .25s all ease;
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
 }
 
 

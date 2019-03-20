@@ -1,6 +1,6 @@
 // For JSON File
-var actual_JSON;
-
+let actual_JSON;
+var lastSelectedVote;
 
 // DOM strings
 var DOMStrings = {
@@ -33,7 +33,11 @@ function init() {
         actual_JSON = JSON.parse(response);
         updateRestaurantList(actual_JSON);
     });
+
+    setupInputText();
 }
+
+console.log(actual_JSON);
 
 function postAddRestaurant(message) {
     var xhr = new XMLHttpRequest();
@@ -41,14 +45,18 @@ function postAddRestaurant(message) {
 
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    //    xhr.onreadystatechange = function () { // Call a function when the state changes.
-    //        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-    //            alert(xhr.responseText);
-    //        }
-    //    }
-
     message = "restaurant_name=" + message;
+    xhr.send(message);
+}
+
+function postPlaceVote(add_name, sub_name) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/placeVote', true);
+
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    var message = "";
+    message = "add_to=" + add_name + "&" + "subtract_from=" + sub_name;
     xhr.send(message);
 }
 
@@ -58,12 +66,6 @@ function postSetDelivery(name, deliveryFlag) {
 
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    //    xhr.onreadystatechange = function () { // Call a function when the state changes.
-    //        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-    //            alert(xhr.responseText);
-    //        }
-    //    }
     var message = "";
     message = "restaurant_name=" + name + "&" + "has_delivery=" + deliveryFlag;
     xhr.send(message);
@@ -73,8 +75,34 @@ function postSetDelivery(name, deliveryFlag) {
 // ----------------------------------------------
 // UI Managing
 // ----------------------------------------------
+function setupInputText() {
+    const setActive = (el, active) => {
+        const formField = el.parentNode.parentNode
+        if (active) {
+            formField.classList.add('form-field--is-active')
+        } else {
+            formField.classList.remove('form-field--is-active')
+            el.value === '' ?
+                formField.classList.remove('form-field--is-filled') :
+                formField.classList.add('form-field--is-filled')
+        }
+    }
+
+[].forEach.call(
+        document.querySelectorAll('.form-field__input, .form-field__textarea'),
+        (el) => {
+            el.onblur = () => {
+                setActive(el, false)
+            }
+            el.onfocus = () => {
+                setActive(el, true)
+            }
+        }
+    )
+}
+
 function update() {
-    
+
 }
 
 
@@ -82,7 +110,7 @@ function updateRestaurantList(obj) {
     var element, html, newHtml;
     // Create HTML string with placeholder text
     element = DOMStrings.resultsList;
-    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><button class="vote__btn" id="vote__btn-%id%"></button> <input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
+    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><input type="radio" name="%name%" class="vote__btn" id="vote__btn-%id%"> <input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
 
 
 
@@ -97,6 +125,7 @@ function updateRestaurantList(obj) {
         }
 
         newHtml = html.replace('%name%', name);
+        newHtml = newHtml.replace('%name%', name);
         newHtml = newHtml.replace('%votes%', restaurantVotes);
         newHtml = newHtml.replace('%delivery%', checkFlag);
         newHtml = newHtml.replace('%id%', restaurantId);
@@ -114,8 +143,7 @@ function updateRestaurantList(obj) {
 
         // Add an event listener for the buttons
         document.getElementById("vote__btn-" + restaurantId).addEventListener("click", function () {
-            postAddRestaurant(name);
-            document.getElementById('restaurant-' + restaurantId).innerHTML++;
+            updateVoteSelection();
         });
         document.getElementById("delivery__btn-" + restaurantId).addEventListener("click", function () {
             postSetDelivery(name, document.getElementById("delivery__btn-" + restaurantId).checked);
@@ -123,18 +151,49 @@ function updateRestaurantList(obj) {
         });
 
     }
-    console.log(obj);
+    //    console.log(obj);
 }
 
 function updateDeliveryCheckbox(idNum, deliveryFlag) {
     if (deliveryFlag == true || deliveryFlag == 'true') {
         document.getElementById("delivery__lb-" + idNum).textContent = 'Delivery is available!';
-    }
-    else
+    } else
         document.getElementById("delivery__lb-" + idNum).textContent = 'Is delivery available?';
-    
-    console.log(deliveryFlag);
 }
+
+function updateVoteSelection() {
+    [].forEach.call(
+        document.querySelectorAll('.vote__btn'),
+        (el) => {
+            if (!(lastSelectedVote == null)) {
+                if (el.checked) {
+                    if (el != lastSelectedVote) {
+                        lastSelectedVote.checked = false;
+                        postPlaceVote(el.name, lastSelectedVote.name);
+                        let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
+                        document.getElementById('restaurant-' + lastEndChar).innerHTML--;
+                        let elEndChar = el.id[el.id.length - 1];
+                        console.log(document.getElementById('restaurant-' + elEndChar).innerHTML);
+                        document.getElementById('restaurant-' + elEndChar).innerHTML++;
+                        console.log(document.getElementById('restaurant-' + elEndChar).innerHTML);
+                    }
+                    lastSelectedVote = el;
+                }
+            } else if (el.checked) {
+                postPlaceVote(el.name, el.name);
+                let elEndChar = el.id[el.id.length - 1];
+                document.getElementById('restaurant-' + elEndChar).innerHTML++;
+                lastSelectedVote = el;
+            }
+        }
+    )
+    //    loadJSON(function (response) {
+    //        // Parse JSON string into object
+    //        actual_JSON = JSON.parse(response);
+    //        updateRestaurantList(actual_JSON);
+    //    });
+}
+
 
 init();
 update();
