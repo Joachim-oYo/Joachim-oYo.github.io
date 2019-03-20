@@ -1,1 +1,12 @@
-{}
+{
+  "Mikes": {
+    "id": 1,
+    "votes": 2,
+    "hasDelivery": false
+  },
+  "Den Den": {
+    "id": 2,
+    "votes": 1,
+    "hasDelivery": false
+  }
+}

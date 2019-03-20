@@ -77,25 +77,36 @@ function updateRestaurantList(obj) {
     var element, html, newHtml;
     // Create HTML string with placeholder text
     element = DOMStrings.resultsList;
-    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%rest-id%">%votes%</div> <div class="buttons"><button class="vote__btn" id="vote__btn-%vote-id%"></button> <input type="checkbox" class="delivery__btn" id="delivery__btn-%delivery-id%" %delivery%></div></div>';
+    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><button class="vote__btn" id="vote__btn-%id%"></button> <input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id% for="delivery__btn-%id%">Is delivery available?</label></div></div>';
+
+
+
+    //  <input type="checkbox" name="cb" id="cb3" />
+    //  <label id="lb3" for="cb3">Has Delivery?</label>
+
+
 
     for (let name in obj) {
         let restaurantVotes = obj[name].votes;
         let restaurantId = obj[name].id;
         let restaurantHasDelivery = obj[name].hasDelivery;
-        console.log(restaurantHasDelivery);
         let checkFlag = '';
+        let deliveryMsg = '';
+
         if (restaurantHasDelivery == 'true') {
             checkFlag = 'checked';
+            deliveryMsg = '';
         }
 
         newHtml = html.replace('%name%', name);
         //        console.log(name + ': ' + obj[name].votes);
         newHtml = newHtml.replace('%votes%', restaurantVotes);
         newHtml = newHtml.replace('%delivery%', checkFlag);
-        newHtml = newHtml.replace('%rest-id%', restaurantId);
-        newHtml = newHtml.replace('%vote-id%', restaurantId);
-        newHtml = newHtml.replace('%delivery-id%', restaurantId);
+        newHtml = newHtml.replace('%id%', restaurantId);
+        newHtml = newHtml.replace('%id%', restaurantId);
+        newHtml = newHtml.replace('%id%', restaurantId);
+        newHtml = newHtml.replace('%id%', restaurantId);
+        newHtml = newHtml.replace('%id%', restaurantId);
 
         // Insert the HTML into the DOM
         document.querySelector(element).insertAdjacentHTML('beforeEnd', newHtml);
@@ -106,8 +117,8 @@ function updateRestaurantList(obj) {
             document.getElementById('restaurant-' + restaurantId).innerHTML++;
         });
         document.getElementById("delivery__btn-" + restaurantId).addEventListener("click", function () {
-            postSetDelivery(name, document.getElementById("delivery__btn-"+restaurantId).checked);
-            console.log(document.getElementById("delivery__btn-"+restaurantId).checked);
+            postSetDelivery(name, document.getElementById("delivery__btn-" + restaurantId).checked);
+            console.log(document.getElementById("delivery__btn-" + restaurantId).checked);
         });
 
     }
