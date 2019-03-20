@@ -1,15 +1,17 @@
 // For REST and JSON
 var express = require('express');
 var app = express();
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 var bodyParser = require('body-parser');
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({
     extended: false
 })
 var fs = require("fs");
-var jsonFileName = __dirname + '/restaurants.json';
+var jsonFileName = __dirname + '/public/data/restaurants.json';
 var jsonFile = require(jsonFileName);
+var id = 0;
+var hasDelivery = false;
 
 // ----------------------------------------------
 // REST Functions and Helpers
@@ -22,10 +24,20 @@ function createRestaurant(resto_name) {
     if (resto_name in jsonFile) {
         //        jsonFile[resto_name].votes++;
         votes = jsonFile[resto_name].votes + 1;
+        id = jsonFile[resto_name].id;
+        hasDelivery = jsonFile[resto_name].hasDelivery;
+    }
+    else {
+        id = 1;
+        for (resto_name in jsonFile) {
+            id++;
+        }
     }
 
     var restaurant = {
-        "votes": votes
+        "id": id,
+        "votes": votes,
+        "hasDelivery": hasDelivery
     }
     return restaurant;
 }
@@ -51,6 +63,17 @@ app.post('/addRestaurant', urlencodedParser, function (req, res) {
         console.log('Updating ' + req.body.restaurant_name + ' and writing to ' + jsonFileName);
         console.log(JSON.stringify(jsonFile, null, 2));
         //        res.end(JSON.stringify(jsonFile, null, 2));
+        res.sendFile(__dirname + "/" + "index.html");
+    });
+})
+
+// On a POST to /addRestaurant, modify the 
+// restaurants.json file depending on what was submitted
+app.post('/setRestaurantDelivery', urlencodedParser, function (req, res) {
+    jsonFile[req.body.restaurant_name].hasDelivery = req.body.has_delivery;
+    
+    fs.writeFile(jsonFileName, JSON.stringify(jsonFile, null, 2), function (err) {
+        if (err) return console.log(err);
         res.sendFile(__dirname + "/" + "index.html");
     });
 })
