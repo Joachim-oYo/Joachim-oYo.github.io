@@ -95,7 +95,7 @@ app.get('/clearRestaurants', function (req, res) {
     fs.writeFile(jsonFileName, JSON.stringify(jsonFile, null, 2), function (err) {
         if (err) return console.log(err);
         console.log('Clearing JSON file at ' + jsonFileName);
-        res.end('All Restaurants Cleared');
+        res.sendFile(__dirname + "/" + "index.html");
     });
 })
 
