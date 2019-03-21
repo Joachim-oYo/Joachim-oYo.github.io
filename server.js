@@ -10,7 +10,7 @@ var urlencodedParser = bodyParser.urlencoded({
 var fs = require("fs");
 var jsonFileName = __dirname + '/public/data/restaurants.json';
 var jsonFile = require(jsonFileName);
-var id = 0;
+var id = 1;
 var hasDelivery = false;
 
 // ----------------------------------------------
@@ -23,12 +23,13 @@ function createRestaurant(resto_name) {
     var votes = 0;
     if (resto_name in jsonFile) {
         //        jsonFile[resto_name].votes++;
-        votes = jsonFile[resto_name].votes + 1;
+        votes = jsonFile[resto_name].votes;
         id = jsonFile[resto_name].id;
         hasDelivery = jsonFile[resto_name].hasDelivery;
     } else {
         id = 1;
         for (resto_name in jsonFile) {
+            console.log(resto_name);
             id++;
         }
     }

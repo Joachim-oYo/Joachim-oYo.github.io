@@ -37,8 +37,6 @@ function init() {
     setupInputText();
 }
 
-console.log(actual_JSON);
-
 function postAddRestaurant(message) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/addRestaurant', true);
@@ -110,9 +108,7 @@ function updateRestaurantList(obj) {
     var element, html, newHtml;
     // Create HTML string with placeholder text
     element = DOMStrings.resultsList;
-    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><input type="radio" name="%name%" class="vote__btn" id="vote__btn-%id%"> <input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
-
-
+    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><div class="vote__btn" id="vote__btn-%id%"> <i id="i__vote-%id%"></i><span id="span__vote-%id%">voted!</span></div><input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
 
     for (let name in obj) {
         let restaurantVotes = obj[name].votes;
@@ -125,9 +121,10 @@ function updateRestaurantList(obj) {
         }
 
         newHtml = html.replace('%name%', name);
-        newHtml = newHtml.replace('%name%', name);
         newHtml = newHtml.replace('%votes%', restaurantVotes);
         newHtml = newHtml.replace('%delivery%', checkFlag);
+        newHtml = newHtml.replace('%id%', restaurantId);
+        newHtml = newHtml.replace('%id%', restaurantId);
         newHtml = newHtml.replace('%id%', restaurantId);
         newHtml = newHtml.replace('%id%', restaurantId);
         newHtml = newHtml.replace('%id%', restaurantId);
@@ -142,7 +139,16 @@ function updateRestaurantList(obj) {
 
 
         // Add an event listener for the buttons
-        document.getElementById("vote__btn-" + restaurantId).addEventListener("click", function () {
+        let voteBtn = document.getElementById("vote__btn-" + restaurantId);
+        voteBtn.value = 'unselected';
+        voteBtn.name = name;
+
+        voteBtn.addEventListener("click", function () {
+            if (voteBtn.value !== 'selected') {
+                document.getElementById("i__vote-" + restaurantId).classList.toggle("press");
+                document.getElementById("span__vote-" + restaurantId).classList.toggle("press");
+                voteBtn.value = 'selected';
+            }
             updateVoteSelection();
         });
         document.getElementById("delivery__btn-" + restaurantId).addEventListener("click", function () {
@@ -166,20 +172,22 @@ function updateVoteSelection() {
         document.querySelectorAll('.vote__btn'),
         (el) => {
             if (!(lastSelectedVote == null)) {
-                if (el.checked) {
+                if (el.value == 'selected') {
                     if (el != lastSelectedVote) {
-                        lastSelectedVote.checked = false;
+                        // Unselect the old button
+                        lastSelectedVote.value = 'unselected';
+                        lastSelectedVote.childNodes[1].classList.toggle("press");
+                        lastSelectedVote.childNodes[2].classList.toggle("press");
+
                         postPlaceVote(el.name, lastSelectedVote.name);
                         let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
                         document.getElementById('restaurant-' + lastEndChar).innerHTML--;
                         let elEndChar = el.id[el.id.length - 1];
-                        console.log(document.getElementById('restaurant-' + elEndChar).innerHTML);
                         document.getElementById('restaurant-' + elEndChar).innerHTML++;
-                        console.log(document.getElementById('restaurant-' + elEndChar).innerHTML);
                     }
                     lastSelectedVote = el;
                 }
-            } else if (el.checked) {
+            } else if (el.value == 'selected') {
                 postPlaceVote(el.name, el.name);
                 let elEndChar = el.id[el.id.length - 1];
                 document.getElementById('restaurant-' + elEndChar).innerHTML++;
@@ -187,11 +195,6 @@ function updateVoteSelection() {
             }
         }
     )
-    //    loadJSON(function (response) {
-    //        // Parse JSON string into object
-    //        actual_JSON = JSON.parse(response);
-    //        updateRestaurantList(actual_JSON);
-    //    });
 }
 
 
