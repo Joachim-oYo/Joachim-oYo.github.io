@@ -1,12 +1,1 @@
-{
-  "Harry's": {
-    "id": 1,
-    "votes": 2,
-    "hasDelivery": "true"
-  },
-  "Den Den": {
-    "id": 2,
-    "votes": 6,
-    "hasDelivery": "false"
-  }
-}
+{}
