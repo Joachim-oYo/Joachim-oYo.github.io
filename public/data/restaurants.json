@@ -1,1 +1,17 @@
-{}
+{
+  "Yoleni's": {
+    "id": 1,
+    "votes": 0,
+    "hasDelivery": false
+  },
+  "Curry Walla (Indian)": {
+    "id": 2,
+    "votes": 3,
+    "hasDelivery": "true"
+  },
+  "Modern Thai": {
+    "id": 3,
+    "votes": 2,
+    "hasDelivery": false
+  }
+}
