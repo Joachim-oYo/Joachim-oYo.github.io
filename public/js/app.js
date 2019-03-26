@@ -1,5 +1,4 @@
 // For JSON File
-let actual_JSON;
 var lastSelectedVote;
 
 // DOM strings
@@ -13,6 +12,9 @@ var DOMStrings = {
 // ----------------------------------------------
 // Data Handling
 // ----------------------------------------------
+
+
+
 function loadJSON(callback) {
 
     var xobj = new XMLHttpRequest();
@@ -30,7 +32,6 @@ function loadJSON(callback) {
 function init() {
     loadJSON(function (response) {
         // Parse JSON string into object
-        actual_JSON = JSON.parse(response);
         updateRestaurantList(actual_JSON);
     });
 
