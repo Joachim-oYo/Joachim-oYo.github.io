@@ -7,36 +7,40 @@ var DOMStrings = {
     voteButton: '.vote__btn'
 };
 
-
-
-// ----------------------------------------------
-// Data Handling
-// ----------------------------------------------
-
-
-
-function loadJSON(callback) {
-
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'data/restaurants.json', true);
-    xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4 && xobj.status == "200") {
-            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-            callback(xobj.responseText);
-        }
-    };
-    xobj.send(null);
+// Initialize the default app
+if (!firebase.apps.length) {
+    firebase.initializeApp({
+        apiKey: "AIzaSyBRLrlLUneGi7KNV6EHcBAT-jyVke2wMT8", // Auth / General Use
+        authDomain: "lunch-voting.firebaseapp.com", // Auth with popup/redirect
+        databaseURL: "https://lunch-voting.firebaseio.com", // Realtime Database
+        storageBucket: "lunch-voting.appspot.com", // Storage
+        messagingSenderId: "838589171936" // Cloud Messaging
+    });
 }
+var database = firebase.database();
+var restaurantsRef = database.ref('restaurants');
+var restaurantData;
+
+// ----------------------------------------------
+// Firebase Functions and Handlers
+// ----------------------------------------------
+restaurantsRef.on("value", function (snapshot) {
+    restaurantData = snapshot.val();
+    console.log('Database updated: ');
+    console.log(restaurantData);
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
 
 function init() {
-    loadJSON(function (response) {
-        // Parse JSON string into object
-        updateRestaurantList(actual_JSON);
-    });
-
-    setupInputText();
+    restaurantsRef.once('value', function (snapshot) {
+        restaurantData = snapshot.val();
+        updateRestaurantList(restaurantData);
+        setupInputText();
+    })
 }
+
 
 function postAddRestaurant(message) {
     var xhr = new XMLHttpRequest();
@@ -48,14 +52,14 @@ function postAddRestaurant(message) {
     xhr.send(message);
 }
 
-function postPlaceVote(add_name, sub_name) {
+function postPlaceVote(add_id, sub_id) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/placeVote', true);
 
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     var message = "";
-    message = "add_to=" + add_name + "&" + "subtract_from=" + sub_name;
+    message = "add_to=" + add_id + "&" + "subtract_from=" + sub_id;
     xhr.send(message);
 }
 
@@ -100,28 +104,24 @@ function setupInputText() {
     )
 }
 
-function update() {
-
-}
-
-
 function updateRestaurantList(obj) {
     var element, html, newHtml;
     // Create HTML string with placeholder text
     element = DOMStrings.resultsList;
     html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><div class="vote__btn" id="vote__btn-%id%"> <i id="i__vote-%id%"></i><span id="span__vote-%id%">voted!</span></div><input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
 
-    for (let name in obj) {
-        let restaurantVotes = obj[name].votes;
-        let restaurantId = obj[name].id;
-        let restaurantHasDelivery = obj[name].hasDelivery;
+    for (let id in obj) {
+        let restaurantVotes = obj[id].votes;
+        let restaurantName = obj[id].name;
+        let restaurantId = id;
+        let restaurantHasDelivery = obj[id].has_delivery;
         let checkFlag = '';
 
         if (restaurantHasDelivery == 'true') {
             checkFlag = 'checked';
         }
 
-        newHtml = html.replace('%name%', name);
+        newHtml = html.replace('%name%', restaurantName);
         newHtml = newHtml.replace('%votes%', restaurantVotes);
         newHtml = newHtml.replace('%delivery%', checkFlag);
         newHtml = newHtml.replace('%id%', restaurantId);
@@ -142,7 +142,8 @@ function updateRestaurantList(obj) {
         // Add an event listener for the buttons
         let voteBtn = document.getElementById("vote__btn-" + restaurantId);
         voteBtn.value = 'unselected';
-        voteBtn.name = name;
+        voteBtn.name = restaurantName;
+        voteBtn.id = restaurantId;
 
         voteBtn.addEventListener("click", function () {
             if (voteBtn.value !== 'selected') {
@@ -153,12 +154,10 @@ function updateRestaurantList(obj) {
             updateVoteSelection();
         });
         document.getElementById("delivery__btn-" + restaurantId).addEventListener("click", function () {
-            postSetDelivery(name, document.getElementById("delivery__btn-" + restaurantId).checked);
+            postSetDelivery(restaurantName, document.getElementById("delivery__btn-" + restaurantId).checked);
             updateDeliveryCheckbox(restaurantId, document.getElementById("delivery__btn-" + restaurantId).checked);
         });
-
     }
-    //    console.log(obj);
 }
 
 function updateDeliveryCheckbox(idNum, deliveryFlag) {
@@ -180,18 +179,19 @@ function updateVoteSelection() {
                         lastSelectedVote.childNodes[1].classList.toggle("press");
                         lastSelectedVote.childNodes[2].classList.toggle("press");
 
-                        postPlaceVote(el.name, lastSelectedVote.name);
-                        let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
-                        document.getElementById('restaurant-' + lastEndChar).innerHTML--;
-                        let elEndChar = el.id[el.id.length - 1];
-                        document.getElementById('restaurant-' + elEndChar).innerHTML++;
+                        postPlaceVote(el.id, lastSelectedVote.id);
+//                        let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
+                        document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
+//                        let elEndChar = el.id[el.id.length - 1];
+                        document.getElementById('restaurant-' + el.id).innerHTML++;
                     }
                     lastSelectedVote = el;
                 }
             } else if (el.value == 'selected') {
-                postPlaceVote(el.name, el.name);
-                let elEndChar = el.id[el.id.length - 1];
-                document.getElementById('restaurant-' + elEndChar).innerHTML++;
+                console.log('here');
+                postPlaceVote(el.id, el.id);
+//                let elEndChar = el.id[el.id.length - 1];
+                document.getElementById('restaurant-' + el.id).innerHTML++;
                 lastSelectedVote = el;
             }
         }
@@ -200,4 +200,4 @@ function updateVoteSelection() {
 
 
 init();
-update();
+//update();
