@@ -127,7 +127,18 @@ app.get('/clearRestaurants', function (req, res) {
             restaurantsRef.child(_child.key).remove();
         })
     })
-    console.log('Cleared database');
+    console.log('Cleared restaurants');
+    console.log('');
+    res.sendFile(__dirname + "/" + "index.html");
+})
+
+app.get('/clearUsers', function (req, res) {
+    usersRef.once('value', function (snapshot) {
+        snapshot.forEach(function (_child) {
+            usersRef.child(_child.key).remove();
+        })
+    })
+    console.log('Cleared users');
     console.log('');
     res.sendFile(__dirname + "/" + "index.html");
 })
