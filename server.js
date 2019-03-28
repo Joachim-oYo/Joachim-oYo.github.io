@@ -89,9 +89,15 @@ app.post('/placeVote', urlencodedParser, function (req, res) {
     restaurantsRef.child(req.body.add_to).update({
         votes: restaurantData[req.body.add_to].votes + 1
     });
-    //    usersRef.child(req.bodyupdate({
-    //        req.body.add_to: 
-    //    });
+
+    var address = req.body.ip_address;
+    var underscoreString = address.replace('.', '_');
+    underscoreString = underscoreString.replace('.', '_');
+    underscoreString = underscoreString.replace('.', '_');
+
+    usersRef.child(underscoreString).update({
+        votedFor: req.body.add_to
+    });
 
 
     res.sendFile(__dirname + "/" + "index.html");
@@ -131,8 +137,8 @@ app.post('/logIpAddress', urlencodedParser, function (req, res) {
     var userInDatabase;
     var address = req.body.ip_address;
     var underscoreString = address.replace('.', '_');
-    var underscoreString = underscoreString.replace('.', '_');
-    var underscoreString = underscoreString.replace('.', '_');
+    underscoreString = underscoreString.replace('.', '_');
+    underscoreString = underscoreString.replace('.', '_');
 
     usersRef.once('value', function (snapshot) {
         userInDatabase = snapshot.hasChild(underscoreString);
