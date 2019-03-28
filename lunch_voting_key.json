@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "lunch-voting",
+  "private_key_id": "d484cd668bfc7455157d7fe9b6078d57f7c56846",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCj6UJbN4NmEMiQ\nt/So3WZ0j8VZSjOyp8+CCYi0I88l2FzHzGgDVVj+1tKcwtdQIC8L/iVHh3iakRaV\nKBjyLlb67msVtJq2uCSqMEEQ+6oy0TdW0pIAg7xaAqeTd4ybWwkWMP12PiHf9J6f\nWHa04e/rlSaiB1Gw3Ef2JmPqTV/zgrjD7tOwTcZ7fRuJB5VJicvJ2RVqJypWWY8m\nJ+Yk1BDA2Da+k46rS9fjYYSVRoYAw+vBF9w2TC3volYAWVEDbImgLV73fEjteWGK\nHD5CTniYNDkSQZZ9GWAe2oXRQnsZaOqCeokjE5kytHTUl33cbSckgGo+f48EMUln\ni4DS5MkzAgMBAAECggEAOlXvuGArAz3Q6/SUfi8B4lUy0wL+IETqLOkwvpAKDvmQ\nl8lPcXRELrqNDZ6om8tAgz+py+nSigw+Icq6CiNk8Hy/HuP+ti4WWn2/AojW+6wL\nSnq53LYF6HEObAT9xWLieoPoCVe2narFc4e8A8dvqIQWUk9RiyTy9Y+XOtHb5uGa\n7jLL0nNVEf7NJdKRRfCECJA+oxQrOKG7KML9j5ccXN9wiNOcJr34Qt7dbI35tYuw\n+yKuq9rLVqxF+KMS4vb4/pT1U97p2aJ5lOFQC1CPmTI/x9rLbyrS25hwSH6VqLFO\nJvd69NvaL89LGmb2kl11PukC+dGCOCinvh3/x9AT3QKBgQDU8zD/MS0TiLgBSQpb\nUCUroXTk1NSVCD+9xKedzK68sT6yiLDB6ev2fu5wH4RF1gzNMKmscbV9m4KlCccC\nfRPxI0FWYNyDGpU1br4vICR6C//9iuBeOp/2+LoilonjfkyR+X/uJyLEsTf8O8Yk\nOsX8xqkWV9p6UmFAOXk5V4u/ZwKBgQDFDCktMWyk82s9BlUCFLl+nvrAKY4zBVru\nznWmMhYKNj8zCwqJg9xMs9FtpJqLKETTKfBJrOXw/HMZP6hNMkIYnciOU+ag8f9+\nXtiyFMAvZxSu+AhGpMH984gD0cHs3d6/QKjLU+8g3dzIZI0jHLSWYPSSzGQ0KOTD\nqym3/TZkVQKBgQCMhq+et+T3LxG+R2T+PTVKRZHOMGTYtEjcAhpal+f3vT+SsYFz\nddqxH7JZa3LuYwKvpZ1SnvcVnLnqDzm0+rVeO9WyGtlp6vDsAdifYKaxo5maxzqo\n9Cb748dxa8YyyfXdnrg9gLYA9rHrUca/wclFthN/Gxqh/hsPNt44aP1foQKBgQC1\nk0IyYfPygFiWcEpPU5enBYqdHu3pOAsWOewRzN+gY2KTf54jH/4WNDFNbrv2dZIO\nX/wLeCafjZHmd1F4aVKc6nCQLuI79yPvaCkY2KRMShm2Lds6dcJJaGsy0cx4n+8N\nn+CrFNorGCbGBlpEO8RxOkDFMVE4+2HqqMQVxmCjzQKBgDZCDon+nNxPmdl6YYhO\n3cdcBR7iX7oxRLE8nTEjuKodv0yUgOj3ZDQopmzUFsKgWCJtLtVwOTswKqllkR8Q\ncbgVEaWK4ATnqK5T7+ckBQv5B4XwlNTDY2k3cZXaAc8ckDxCZynwi1awDYYEOlcz\n2L7vPoLHR0b4ImrAYTXiJ04L\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-7kglv@lunch-voting.iam.gserviceaccount.com",
+  "client_id": "101515418342423874584",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-7kglv%40lunch-voting.iam.gserviceaccount.com"
+}

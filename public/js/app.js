@@ -1,5 +1,6 @@
 // For JSON File
 var lastSelectedVote;
+var userVote;
 
 // DOM strings
 var DOMStrings = {
@@ -19,28 +20,75 @@ if (!firebase.apps.length) {
 }
 var database = firebase.database();
 var restaurantsRef = database.ref('restaurants');
+var usersRef = database.ref('users');
 var restaurantData;
+var users;
+var ipAddress;
+var underscoreString;
 
 // ----------------------------------------------
 // Firebase Functions and Handlers
 // ----------------------------------------------
 restaurantsRef.on("value", function (snapshot) {
     restaurantData = snapshot.val();
-    console.log('Database updated: ');
+    console.log('Restaurants updated: ');
     console.log(restaurantData);
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+usersRef.on("value", function (snapshot) {
+    users = snapshot.val();
+    console.log('Users updated: ');
+    console.log(users);
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
 
 function init() {
-    restaurantsRef.once('value', function (snapshot) {
-        restaurantData = snapshot.val();
-        updateRestaurantList(restaurantData);
-        setupInputText();
+    getIPAddress();
+    usersRef.once('value', function (snapshot) {
+        users = snapshot.val();
+
+        underscoreString = ipAddress.replace('.', '_');
+        underscoreString = underscoreString.replace('.', '_');
+        underscoreString = underscoreString.replace('.', '_');
+        userVote = users[underscoreString].votedFor;
+
+        restaurantsRef.once('value', function (snapshot) {
+            restaurantData = snapshot.val();
+            updateRestaurantList(restaurantData);
+            setupInputText();
+        })
+
     })
 }
 
+function getIPAddress() {
+    var xhr = new XMLHttpRequest();
+    var url = "https://api.ipify.org";
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            ipAddress = result;
+            console.log(ipAddress);
+            postLogIpAddress(ipAddress);
+        }
+    };
+
+    xhr.open("GET", url, true);
+    xhr.send();
+}
+
+function postLogIpAddress(message) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/logIpAddress', true);
+
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    message = "ip_address=" + message;
+    xhr.send(message);
+}
 
 function postAddRestaurant(message) {
     var xhr = new XMLHttpRequest();
@@ -59,7 +107,7 @@ function postPlaceVote(add_id, sub_id) {
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     var message = "";
-    message = "add_to=" + add_id + "&" + "subtract_from=" + sub_id;
+    message = "ip_address=" + ipAddress + "&" + "add_to=" + add_id + "&" + "subtract_from=" + sub_id;
     xhr.send(message);
 }
 
@@ -144,6 +192,13 @@ function updateRestaurantList(obj) {
         voteBtn.value = 'unselected';
         voteBtn.name = restaurantName;
         voteBtn.id = restaurantId;
+        
+        if (restaurantId == userVote) {
+            voteBtn.value = 'selected';
+            lastSelectedVote = voteBtn;
+            document.getElementById("i__vote-" + restaurantId).classList.toggle("press");
+            document.getElementById("span__vote-" + restaurantId).classList.toggle("press");
+        }
 
         voteBtn.addEventListener("click", function () {
             if (voteBtn.value !== 'selected') {
@@ -180,9 +235,7 @@ function updateVoteSelection() {
                         lastSelectedVote.childNodes[2].classList.toggle("press");
 
                         postPlaceVote(el.id, lastSelectedVote.id);
-//                        let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
                         document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
-//                        let elEndChar = el.id[el.id.length - 1];
                         document.getElementById('restaurant-' + el.id).innerHTML++;
                     }
                     lastSelectedVote = el;
@@ -190,7 +243,6 @@ function updateVoteSelection() {
             } else if (el.value == 'selected') {
                 console.log('here');
                 postPlaceVote(el.id, el.id);
-//                let elEndChar = el.id[el.id.length - 1];
                 document.getElementById('restaurant-' + el.id).innerHTML++;
                 lastSelectedVote = el;
             }
