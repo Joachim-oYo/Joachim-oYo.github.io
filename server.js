@@ -20,10 +20,11 @@ admin.initializeApp({
 
 // Get a database reference to our blog
 var db = admin.database();
-//var restaurantsRef = db.ref("lunch-voting/restaurants");
 var restaurantsRef = db.ref('restaurants');
+var usersRef = db.ref('users');
 
 var restaurantData;
+var users;
 var id = 1;
 var has_delivery = false;
 
@@ -75,7 +76,6 @@ app.post('/addRestaurant', urlencodedParser, async function (req, res) {
 
 app.post('/placeVote', urlencodedParser, function (req, res) {
     console.log(req.body.add_to);
-    //    console.log(restaurantData[req.body.add_to]);
 
     if (!(req.body.subtract_from == req.body.add_to)) {
         console.log('Removing one vote from ' + req.body.subtract_from);
@@ -89,6 +89,9 @@ app.post('/placeVote', urlencodedParser, function (req, res) {
     restaurantsRef.child(req.body.add_to).update({
         votes: restaurantData[req.body.add_to].votes + 1
     });
+    //    usersRef.child(req.bodyupdate({
+    //        req.body.add_to: 
+    //    });
 
 
     res.sendFile(__dirname + "/" + "index.html");
@@ -124,10 +127,26 @@ app.get('/clearRestaurants', function (req, res) {
 })
 
 
-//app.post('/logIpAddress', urlencodedParser, function (req, res) {
-//    console.log(req.body.ip_address);    
-//    res.sendFile(__dirname + "/" + "index.html");
-//})
+app.post('/logIpAddress', urlencodedParser, function (req, res) {
+    var userInDatabase;
+    var address = req.body.ip_address;
+    var underscoreString = address.replace('.', '_');
+    var underscoreString = underscoreString.replace('.', '_');
+    var underscoreString = underscoreString.replace('.', '_');
+
+    usersRef.once('value', function (snapshot) {
+        userInDatabase = snapshot.hasChild(underscoreString);
+        console.log(userInDatabase);
+    });
+
+    if (!userInDatabase) {
+        usersRef.child(underscoreString).set({
+            votedFor: 'NO_VOTE_YET'
+        });
+    }
+
+    res.sendFile(__dirname + "/" + "index.html");
+})
 
 
 // Initialize the server on the port defined in .env 
@@ -137,10 +156,19 @@ var server = app.listen(process.env.PORT || 1243, async function () {
     console.log("----------------");
     console.log("Lunch-Voting app listening at http://%s:%s", host, port)
     console.log("----------------");
+
     restaurantsRef.once("value", function (snapshot) {
         restaurantData = snapshot.val();
         if (restaurantData == null)
             restaurantData = {};
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+
+    usersRef.once("value", function (snapshot) {
+        users = snapshot.val();
+        if (users == null)
+            users = {};
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
     });
@@ -153,13 +181,19 @@ restaurantsRef.on("value", function (snapshot) {
     restaurantData = snapshot.val();
     if (restaurantData == null)
         restaurantData = {};
-    console.log('Update to database: ');
+    console.log('Update to restaurants: ');
     console.log(restaurantData);
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
 
-
-
-
+usersRef.on("value", function (snapshot) {
+    users = snapshot.val();
+    if (users == null)
+        users = {};
+    console.log('Update to users: ');
+    console.log(users);
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});

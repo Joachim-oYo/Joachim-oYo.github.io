@@ -39,7 +39,7 @@ function init() {
         updateRestaurantList(restaurantData);
         setupInputText();
     })
-//    getIPAddress();
+    getIPAddress();
 }
 
 function getIPAddress() {
