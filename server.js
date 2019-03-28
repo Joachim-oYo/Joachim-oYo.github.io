@@ -105,11 +105,11 @@ app.post('/placeVote', urlencodedParser, function (req, res) {
 
 
 app.post('/setRestaurantDelivery', urlencodedParser, function (req, res) {
+    console.log(req.body.restaurant_name);
     restaurantsRef.child(req.body.restaurant_name).update({
         has_delivery: req.body.has_delivery
     });
 
-    restaurantData[req.body.restaurant_name].has_delivery = req.body.has_delivery;
     res.sendFile(__dirname + "/" + "index.html");
 })
 

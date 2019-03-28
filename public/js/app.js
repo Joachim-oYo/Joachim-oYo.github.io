@@ -209,7 +209,7 @@ function updateRestaurantList(obj) {
             updateVoteSelection();
         });
         document.getElementById("delivery__btn-" + restaurantId).addEventListener("click", function () {
-            postSetDelivery(restaurantName, document.getElementById("delivery__btn-" + restaurantId).checked);
+            postSetDelivery(restaurantId, document.getElementById("delivery__btn-" + restaurantId).checked);
             updateDeliveryCheckbox(restaurantId, document.getElementById("delivery__btn-" + restaurantId).checked);
         });
     }
