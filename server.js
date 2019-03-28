@@ -75,8 +75,8 @@ app.post('/addRestaurant', urlencodedParser, async function (req, res) {
 
 app.post('/placeVote', urlencodedParser, function (req, res) {
     console.log(req.body.add_to);
-//    console.log(restaurantData[req.body.add_to]);
-    
+    //    console.log(restaurantData[req.body.add_to]);
+
     if (!(req.body.subtract_from == req.body.add_to)) {
         console.log('Removing one vote from ' + req.body.subtract_from);
         restaurantsRef.child(req.body.subtract_from).update({
@@ -101,8 +101,6 @@ app.post('/setRestaurantDelivery', urlencodedParser, function (req, res) {
     });
 
     restaurantData[req.body.restaurant_name].has_delivery = req.body.has_delivery;
-
-
     res.sendFile(__dirname + "/" + "index.html");
 })
 
@@ -120,13 +118,17 @@ app.get('/clearRestaurants', function (req, res) {
             restaurantsRef.child(_child.key).remove();
         })
     })
-
     console.log('Cleared database');
     console.log('');
-
-
     res.sendFile(__dirname + "/" + "index.html");
 })
+
+
+//app.post('/logIpAddress', urlencodedParser, function (req, res) {
+//    console.log(req.body.ip_address);    
+//    res.sendFile(__dirname + "/" + "index.html");
+//})
+
 
 // Initialize the server on the port defined in .env 
 var server = app.listen(process.env.PORT || 1243, async function () {
@@ -156,3 +158,8 @@ restaurantsRef.on("value", function (snapshot) {
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
+
+
+
+
+

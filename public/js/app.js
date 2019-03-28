@@ -39,8 +39,34 @@ function init() {
         updateRestaurantList(restaurantData);
         setupInputText();
     })
+//    getIPAddress();
 }
 
+function getIPAddress() {
+    var xhr = new XMLHttpRequest();
+    var ip_address = '12.234.182.71';
+    var url = "https://api.ipify.org";
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            console.log(result);
+            postLogIpAddress(result);
+        }
+    };
+
+    xhr.open("GET", url, true);
+    xhr.send();
+}
+
+function postLogIpAddress(message) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/logIpAddress', true);
+
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    message = "ip_address=" + message;
+    xhr.send(message);
+}
 
 function postAddRestaurant(message) {
     var xhr = new XMLHttpRequest();
@@ -180,9 +206,9 @@ function updateVoteSelection() {
                         lastSelectedVote.childNodes[2].classList.toggle("press");
 
                         postPlaceVote(el.id, lastSelectedVote.id);
-//                        let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
+                        //                        let lastEndChar = lastSelectedVote.id[lastSelectedVote.id.length - 1];
                         document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
-//                        let elEndChar = el.id[el.id.length - 1];
+                        //                        let elEndChar = el.id[el.id.length - 1];
                         document.getElementById('restaurant-' + el.id).innerHTML++;
                     }
                     lastSelectedVote = el;
@@ -190,7 +216,7 @@ function updateVoteSelection() {
             } else if (el.value == 'selected') {
                 console.log('here');
                 postPlaceVote(el.id, el.id);
-//                let elEndChar = el.id[el.id.length - 1];
+                //                let elEndChar = el.id[el.id.length - 1];
                 document.getElementById('restaurant-' + el.id).innerHTML++;
                 lastSelectedVote = el;
             }
