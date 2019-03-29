@@ -1,6 +1,7 @@
 // For JSON File
 var lastSelectedVote;
 var userVote;
+let orderedKeys;
 
 // DOM strings
 var DOMStrings = {
@@ -30,16 +31,27 @@ var underscoreString;
 // Firebase Functions and Handlers
 // ----------------------------------------------
 restaurantsRef.on("value", function (snapshot) {
+    // Reorder based on votes
+    restaurantsRef.orderByChild('votes').on("value", function (snapshot) {
+        orderedKeys = [];
+        snapshot.forEach(function (data) {
+            orderedKeys.push(data.key);
+        });
+        orderedKeys.reverse();
+    });
+
     restaurantData = snapshot.val();
+    updateRestaurantList(restaurantData);
+
     console.log('Restaurants updated: ');
-    console.log(restaurantData);
+//    console.log(restaurantData);
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 usersRef.on("value", function (snapshot) {
     users = snapshot.val();
     console.log('Users updated: ');
-    console.log(users);
+//    console.log(users);
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
@@ -47,7 +59,7 @@ usersRef.on("value", function (snapshot) {
 
 function init() {
     getIPAddress();
-    usersRef.once('value', function (snapshot) {
+    usersRef.on('value', function (snapshot) {
         users = snapshot.val();
 
         underscoreString = ipAddress.replace('.', '_');
@@ -60,7 +72,6 @@ function init() {
             updateRestaurantList(restaurantData);
             setupInputText();
         })
-
     })
 }
 
@@ -71,7 +82,7 @@ function getIPAddress() {
         if (this.readyState == 4 && this.status == 200) {
             var result = this.responseText;
             ipAddress = result;
-            console.log(ipAddress);
+//            console.log(ipAddress);
             postLogIpAddress(ipAddress);
         }
     };
@@ -154,11 +165,20 @@ function setupInputText() {
 
 function updateRestaurantList(obj) {
     var element, html, newHtml;
-    // Create HTML string with placeholder text
-    element = DOMStrings.resultsList;
-    html = '<div class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><div class="vote__btn" id="vote__btn-%id%"> <i id="i__vote-%id%"></i><span id="span__vote-%id%">voted!</span></div><input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
 
-    for (let id in obj) {
+    element = DOMStrings.resultsList;
+
+    var resultsListElement = document.querySelector(element);
+    resultsListElement.parentNode.removeChild(resultsListElement);
+    var resultsContainerElement = document.getElementById('results-container');
+    var newElement = document.createElement('div');
+    newElement.setAttribute('class', 'results__list');
+    resultsContainerElement.appendChild(newElement);
+
+    //    document.querySelector(element).
+    html = '<div id="added-restaurants" class="restaurant clearfix">%name% <div class="restaurant__votes" id="restaurant-%id%">%votes%</div> <div class="buttons"><div class="vote__btn" id="vote__btn-%id%"> <i id="i__vote-%id%"></i><span id="span__vote-%id%">voted!</span></div><input type="checkbox" class="delivery__btn" id="delivery__btn-%id%" %delivery%><label class="delivery__lb" id="delivery__lb-%id%" for="delivery__btn-%id%">Is delivery available?</label></div></div>';
+
+    for (let id of orderedKeys) {
         let restaurantVotes = obj[id].votes;
         let restaurantName = obj[id].name;
         let restaurantId = id;
@@ -189,10 +209,13 @@ function updateRestaurantList(obj) {
 
         // Add an event listener for the buttons
         let voteBtn = document.getElementById("vote__btn-" + restaurantId);
+        //        console.log(voteBtn);
         voteBtn.value = 'unselected';
         voteBtn.name = restaurantName;
         voteBtn.id = restaurantId;
-        
+
+//        console.log(restaurantId);
+//        console.log(userVote);
         if (restaurantId == userVote) {
             voteBtn.value = 'selected';
             lastSelectedVote = voteBtn;
@@ -227,21 +250,21 @@ function updateVoteSelection() {
         document.querySelectorAll('.vote__btn'),
         (el) => {
             if (!(lastSelectedVote == null)) {
-                if (el.value == 'selected') {
-                    if (el != lastSelectedVote) {
-                        // Unselect the old button
-                        lastSelectedVote.value = 'unselected';
-                        lastSelectedVote.childNodes[1].classList.toggle("press");
-                        lastSelectedVote.childNodes[2].classList.toggle("press");
-
-                        postPlaceVote(el.id, lastSelectedVote.id);
-                        document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
-                        document.getElementById('restaurant-' + el.id).innerHTML++;
-                    }
-                    lastSelectedVote = el;
-                }
+                                if (el.value == 'selected') {
+                                    if (el != lastSelectedVote) {
+                                        // Unselect the old button
+                                        lastSelectedVote.value = 'unselected';
+                                        lastSelectedVote.childNodes[1].classList.toggle("press");
+                                        lastSelectedVote.childNodes[2].classList.toggle("press");
+                
+                                        postPlaceVote(el.id, lastSelectedVote.id);
+                                        document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
+                                        document.getElementById('restaurant-' + el.id).innerHTML++;
+                                        console.log('here');
+                                    }
+                                    lastSelectedVote = el;
+                                }
             } else if (el.value == 'selected') {
-                console.log('here');
                 postPlaceVote(el.id, el.id);
                 document.getElementById('restaurant-' + el.id).innerHTML++;
                 lastSelectedVote = el;

@@ -198,6 +198,7 @@ restaurantsRef.on("value", function (snapshot) {
     restaurantData = snapshot.val();
     if (restaurantData == null)
         restaurantData = {};
+
     console.log('Update to restaurants: ');
     console.log(restaurantData);
 }, function (errorObject) {

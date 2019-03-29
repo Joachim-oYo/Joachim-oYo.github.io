@@ -36,7 +36,13 @@
                                 <div class="form-field__control">
                                     <label for="input-name" class="form-field__label">Restaurant Name</label>
                                     <input id="input-name" type="name" class="form-field__input" name="restaurant_name" />
-                                    <!--                                    <input type="submit" class="submit__btn" value="Add it">-->
+
+<!--                                    
+                                    <label for="input-menu" class="form-field__label">Menu Link (optional)</label>
+                                    <input id="input-menu" type="menu" class="form-field__input" name="restaurant_name" />
+
+                                   <input type="submit" class="submit__btn" value="Add it">
+-->
                                 </div>
                             </div>
                         </div>
@@ -48,7 +54,7 @@
 
     <div class="container">
         <div class="bottom">
-            <div class="results__area">
+            <div class="results__area" id="results-container">
                 <div class="results__list">
 
 
@@ -61,7 +67,7 @@
 
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
-<!--    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>-->
+    <!--    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>-->
     <script>
         // Initialize Firebase
         var config = {
@@ -73,6 +79,7 @@
             messagingSenderId: "838589171936"
         };
         firebase.initializeApp(config);
+
     </script>
 
     <!-- My JavaScript -->
