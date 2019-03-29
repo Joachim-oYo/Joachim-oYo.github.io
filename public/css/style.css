@@ -253,6 +253,19 @@ span.press {
     animation: fade 2s;
 }
 
+i.pressed {
+/*    animation: size .4s;*/
+    color: #e23b3b;
+}
+
+span.pressed {
+    bottom: 108px;
+    font-size: 14px;
+    visibility: visible;
+    left: 4px;
+/*    animation: fade 2s;*/
+}
+
 @keyframes fade {
     0% {
         color: #transparent;

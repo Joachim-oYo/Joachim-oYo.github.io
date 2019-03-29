@@ -2,6 +2,7 @@
 var lastSelectedVote;
 var userVote;
 let orderedKeys;
+let timeLeft = 2;
 
 // DOM strings
 var DOMStrings = {
@@ -30,36 +31,17 @@ var underscoreString;
 // ----------------------------------------------
 // Firebase Functions and Handlers
 // ----------------------------------------------
-restaurantsRef.on("value", function (snapshot) {
-    // Reorder based on votes
-    restaurantsRef.orderByChild('votes').on("value", function (snapshot) {
-        orderedKeys = [];
-        snapshot.forEach(function (data) {
-            orderedKeys.push(data.key);
-        });
-        orderedKeys.reverse();
-    });
-
-    restaurantData = snapshot.val();
-    updateRestaurantList(restaurantData);
-
-    console.log('Restaurants updated: ');
-//    console.log(restaurantData);
-}, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-});
-usersRef.on("value", function (snapshot) {
-    users = snapshot.val();
-    console.log('Users updated: ');
-//    console.log(users);
-}, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-});
-
-
 function init() {
+    setInterval(function () {
+        timeLeft -= 1;
+        if (timeLeft <= 0) {
+            console.log('updated');
+            updateRestaurantList(restaurantData);
+            timeLeft = 2;
+        }
+    }, 1000);
     getIPAddress();
-    usersRef.on('value', function (snapshot) {
+    usersRef.once('value', function (snapshot) {
         users = snapshot.val();
 
         underscoreString = ipAddress.replace('.', '_');
@@ -67,12 +49,58 @@ function init() {
         underscoreString = underscoreString.replace('.', '_');
         userVote = users[underscoreString].votedFor;
 
-        restaurantsRef.once('value', function (snapshot) {
+        restaurantsRef.once("value", function (snapshot) {
+            // Reorder based on votes
+            restaurantsRef.orderByChild('votes').on("value", function (snapshot) {
+                orderedKeys = [];
+                snapshot.forEach(function (data) {
+                    orderedKeys.push(data.key);
+                });
+                orderedKeys.reverse();
+            });
+
             restaurantData = snapshot.val();
             updateRestaurantList(restaurantData);
             setupInputText();
-        })
+
+
+            console.log('Restaurants updated: ');
+        }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
     })
+
+
+    usersRef.on("value", function (snapshot) {
+        users = snapshot.val();
+        underscoreString = ipAddress.replace('.', '_');
+        underscoreString = underscoreString.replace('.', '_');
+        underscoreString = underscoreString.replace('.', '_');
+        userVote = users[underscoreString].votedFor;
+        console.log('Users updated: ');
+        //    console.log(users);
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+
+    restaurantsRef.on("value", function (snapshot) {
+        // Reorder based on votes
+        restaurantsRef.orderByChild('votes').on("value", function (snapshot) {
+            orderedKeys = [];
+            snapshot.forEach(function (data) {
+                orderedKeys.push(data.key);
+            });
+            orderedKeys.reverse();
+        });
+
+        restaurantData = snapshot.val();
+        timeLeft = 2;
+
+
+        console.log('Restaurants updated: ');
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
 }
 
 function getIPAddress() {
@@ -82,7 +110,7 @@ function getIPAddress() {
         if (this.readyState == 4 && this.status == 200) {
             var result = this.responseText;
             ipAddress = result;
-//            console.log(ipAddress);
+            //            console.log(ipAddress);
             postLogIpAddress(ipAddress);
         }
     };
@@ -214,20 +242,22 @@ function updateRestaurantList(obj) {
         voteBtn.name = restaurantName;
         voteBtn.id = restaurantId;
 
-//        console.log(restaurantId);
-//        console.log(userVote);
         if (restaurantId == userVote) {
-            voteBtn.value = 'selected';
+            //            voteBtn.value = 'selected';
             lastSelectedVote = voteBtn;
-            document.getElementById("i__vote-" + restaurantId).classList.toggle("press");
-            document.getElementById("span__vote-" + restaurantId).classList.toggle("press");
+            document.getElementById("i__vote-" + restaurantId).classList.toggle("pressed");
+            document.getElementById("span__vote-" + restaurantId).classList.toggle("pressed");
+            updateVoteSelection();
+            console.log('hi');
         }
 
         voteBtn.addEventListener("click", function () {
             if (voteBtn.value !== 'selected') {
+                console.log('hiiiii');
                 document.getElementById("i__vote-" + restaurantId).classList.toggle("press");
                 document.getElementById("span__vote-" + restaurantId).classList.toggle("press");
                 voteBtn.value = 'selected';
+                userVote = voteBtn.id;
             }
             updateVoteSelection();
         });
@@ -250,21 +280,27 @@ function updateVoteSelection() {
         document.querySelectorAll('.vote__btn'),
         (el) => {
             if (!(lastSelectedVote == null)) {
-                                if (el.value == 'selected') {
-                                    if (el != lastSelectedVote) {
-                                        // Unselect the old button
-                                        lastSelectedVote.value = 'unselected';
-                                        lastSelectedVote.childNodes[1].classList.toggle("press");
-                                        lastSelectedVote.childNodes[2].classList.toggle("press");
-                
-                                        postPlaceVote(el.id, lastSelectedVote.id);
-                                        document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
-                                        document.getElementById('restaurant-' + el.id).innerHTML++;
-                                        console.log('here');
-                                    }
-                                    lastSelectedVote = el;
-                                }
-            } else if (el.value == 'selected') {
+                if (el.id == userVote) {
+                    if (el != lastSelectedVote) {
+                        // Unselect the old button
+
+                        if (lastSelectedVote.value == 'unselected') {
+                            lastSelectedVote.childNodes[1].classList.toggle("pressed");
+                            lastSelectedVote.childNodes[2].classList.toggle("pressed");
+                        } else {
+                            lastSelectedVote.childNodes[1].classList.toggle("press");
+                            lastSelectedVote.childNodes[2].classList.toggle("press");
+                        }
+                        lastSelectedVote.value = 'unselected';
+
+                        postPlaceVote(el.id, lastSelectedVote.id);
+                        document.getElementById('restaurant-' + lastSelectedVote.id).innerHTML--;
+                        document.getElementById('restaurant-' + el.id).innerHTML++;
+                        console.log('here');
+                    }
+                    lastSelectedVote = el;
+                }
+            } else if (el.id === userVote) {
                 postPlaceVote(el.id, el.id);
                 document.getElementById('restaurant-' + el.id).innerHTML++;
                 lastSelectedVote = el;
